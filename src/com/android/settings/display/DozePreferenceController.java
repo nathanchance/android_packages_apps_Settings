@@ -21,6 +21,8 @@ import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
 
+import com.android.internal.util.du.Utils;
+
 import com.android.settings.core.PreferenceController;
 import com.android.settings.core.instrumentation.MetricsFeatureProvider;
 import com.android.settings.overlay.FeatureFactory;
@@ -68,11 +70,15 @@ public class DozePreferenceController extends PreferenceController implements
 
     @Override
     public boolean isAvailable() {
-        String name = Build.IS_DEBUGGABLE ? SystemProperties.get("debug.doze.component") : null;
-        if (TextUtils.isEmpty(name)) {
-            name = mContext.getResources().getString(
-                    com.android.internal.R.string.config_dozeComponent);
+        if (!Utils.hasAltAmbientDisplay(mContext.getApplicationContext())) {
+            String name = Build.IS_DEBUGGABLE ? SystemProperties.get("debug.doze.component") : null;
+            if (TextUtils.isEmpty(name)) {
+                name = mContext.getResources().getString(
+                        com.android.internal.R.string.config_dozeComponent);
+            }
+            return !TextUtils.isEmpty(name);
+        } else {
+            return false;
         }
-        return !TextUtils.isEmpty(name);
     }
 }
